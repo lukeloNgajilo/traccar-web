@@ -1,29 +1,50 @@
-name: Modern App Lint
+name: release artifacts
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - modern/**
-  pull_request:
-    branches:
-      - master
-    paths:
-      - modern/**
-
+  workflow_dispatch:
+    
 jobs:
+
   build:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
       with:
-        cache: npm
-        cache-dependency-path: modern/package-lock.json
-    - run: npm ci
-      working-directory: modern
-    - run: npm run lint
-      working-directory: modern
+        node-version: ${{ matrix.node-version }}
+    - run: npm run build
+    - name: upload artifacts 
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-dist
+        path: modern/**
+        
+  release:
+    name: release 🐍 distributions 📦
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download artifact 
+        uses: actions/download-artifact@v3
+        with:
+          name: app-dist
+      - name: Test artifact 
+        run: ls -R
+      - name: make a github release
+        id: new-release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            *.gz
+            *.whl
