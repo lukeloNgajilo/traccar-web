@@ -31,7 +31,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: app-dist
-        path: modern/**
+        path: modern/build
         
   release:
     name: release 🐍 distributions 📦
