@@ -20,9 +20,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install    
-    - run: npm i @sencha/cmd
+
+    - run: npm install  
+      working-directory: modern
+
     - run: npm run build
+      working-directory: modern
 
     - name: upload artifacts 
       uses: actions/upload-artifact@v3
