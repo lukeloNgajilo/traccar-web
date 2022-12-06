@@ -30,7 +30,7 @@ jobs:
     - name: upload artifacts 
       uses: actions/upload-artifact@v3
       with:
-        name: app-dist
+        name: modern/build
         path: modern/build
         
   release:
@@ -42,7 +42,7 @@ jobs:
       - name: Download artifact 
         uses: actions/download-artifact@v3
         with:
-          name: app-dist
+          name: modern/build
       - name: Test artifact 
         run: ls -R
       - name: make a github release
